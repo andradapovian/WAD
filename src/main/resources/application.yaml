@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/mountaineering"
+    username: "admin"
+    password: "admin"
+    initialization-mode: "always"
+  jpa:
+    hibernate.ddl-auto: "update"
+    generate-ddl: true
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  jackson.serialization.indent_output: true
