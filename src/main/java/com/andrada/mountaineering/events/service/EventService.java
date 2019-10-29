@@ -2,15 +2,24 @@ package com.andrada.mountaineering.events.service;
 
 import com.andrada.mountaineering.events.model.Event;
 import com.andrada.mountaineering.events.repository.EventRepository;
+import com.andrada.mountaineering.events.rest.EventController;
+import com.andrada.mountaineering.exceptions.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class EventService {
     private EventRepository eventRepository;
+    private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
     @Autowired
     public EventService(EventRepository eventRepository) {
@@ -25,12 +34,12 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event getEvent(long id){
-        return eventRepository.findById(id).orElse(null);
+    public Event getEvent (long id) throws EntityNotFoundException{
+        return eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public Event updateEvent(long id, Event event){
-        Event dbEvent=eventRepository.findById(id).orElse(null);
+    public Event updateEvent(long id, Event event) throws EntityNotFoundException{
+        Event dbEvent=eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         if(Objects.isNull(dbEvent))
             return null;
         dbEvent.setName(event.getName());
@@ -40,10 +49,23 @@ public class EventService {
         return eventRepository.save(dbEvent);
     }
 
-    public void deleteEvent (long id){
-        Event dbEvent = eventRepository.findById(id).orElse(null);
+    public void deleteEvent (long id) throws EntityNotFoundException{
+        Event dbEvent = eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         if(Objects.isNull(dbEvent))
             return;
         eventRepository.delete(dbEvent);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ModelAndView handleEmployeeNotFoundException(HttpServletRequest request, Exception ex) {
+        logger.error("Requested URL=" + request.getRequestURL());
+        logger.error("Exception Raised=" + ex);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("exception", ex);
+        modelAndView.addObject("url", request.getRequestURL());
+
+        modelAndView.setViewName("error");
+        return modelAndView;
     }
 }
