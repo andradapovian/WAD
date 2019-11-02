@@ -1,9 +1,11 @@
 package com.andrada.mountaineering.users.model;
 
+import com.andrada.mountaineering.users.roles.model.UserRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Data
@@ -16,8 +18,9 @@ public class User {
     @GeneratedValue
     private long id;
 
-    @Column
-    private String roles;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable
+    private Set<UserRole> roles;
 
     @Column
     private String email;
