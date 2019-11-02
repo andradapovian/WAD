@@ -17,3 +17,7 @@ spring:
           lob:
             non_contextual_creation: true
   jackson.serialization.indent_output: true
+  security:
+    user:
+      name: "appAdmin"
+      password: "admin"

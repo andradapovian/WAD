@@ -18,7 +18,7 @@ public class User {
     @GeneratedValue
     private long id;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable
     private Set<UserRole> roles;
 
@@ -33,4 +33,7 @@ public class User {
 
     @Column
     private String lastName;
+
+    @Column
+    private String username;
 }
