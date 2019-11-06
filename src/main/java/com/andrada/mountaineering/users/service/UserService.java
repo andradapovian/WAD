@@ -3,27 +3,36 @@ package com.andrada.mountaineering.users.service;
 
 import com.andrada.mountaineering.events.rest.EventController;
 import com.andrada.mountaineering.exceptions.EntityNotFoundException;
+import com.andrada.mountaineering.exceptions.NoUserNameException;
+import com.andrada.mountaineering.users.dto.UserContract;
 import com.andrada.mountaineering.users.model.User;
 import com.andrada.mountaineering.users.repository.UserRepository;
+import com.andrada.mountaineering.users.roles.model.UserRole;
+import com.andrada.mountaineering.users.roles.repository.UserRoleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UserService {
     private UserRepository userRepository;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
     @Autowired
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository, UserRoleRepository userRoleRepository){
         this.userRepository=userRepository;
+        this.userRoleRepository=userRoleRepository;
+
     }
 
     public List<User> getAllUsers(){
@@ -31,15 +40,18 @@ public class UserService {
     }
 
     public User createNewUser(User user){
+        Optional<UserRole> role = userRoleRepository.findRoleByName("ROLE_VIEWER");
+        user.getRoles().add(role.get());
+
         return userRepository.save(user);
     }
 
     public User getUser(long id) throws EntityNotFoundException{
-        return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found at ID "+ id));
     }
 
     public User updateUser(long id, User user) throws EntityNotFoundException{
-        User dbUser=userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        User dbUser=userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found at ID "+ id));
         if(Objects.isNull(dbUser))
             return null;
         dbUser.setRoles(user.getRoles());
@@ -51,21 +63,17 @@ public class UserService {
     }
 
     public void deleteUser (long id) throws EntityNotFoundException{
-        User dbUser = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        User dbUser = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found at ID "+ id));
         if (Objects.isNull(dbUser))
             return;
         userRepository.delete(dbUser);
     }
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ModelAndView handleEmployeeNotFoundException(HttpServletRequest request, Exception ex) {
-        logger.error("Requested URL=" + request.getRequestURL());
-        logger.error("Exception Raised=" + ex);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("exception", ex);
-        modelAndView.addObject("url", request.getRequestURL());
-
-        modelAndView.setViewName("error");
-        return modelAndView;
+    public User contract2entity(UserContract userContract) throws NoUserNameException {
+        User target = new User();
+        if (userContract.getUsername() == null)
+            throw new NoUserNameException("Must introduce username");
+        BeanUtils.copyProperties(userContract, target, "roles");
+        return target;
     }
 }

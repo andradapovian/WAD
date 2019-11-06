@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -18,9 +19,9 @@ public class User {
     @GeneratedValue
     private long id;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinTable
-    private Set<UserRole> roles;
+    private Set<UserRole> roles = new HashSet<>();
 
     @Column
     private String email;

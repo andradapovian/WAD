@@ -19,6 +19,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(NoUserNameException.class)
+    public @ResponseBody
+    ResponseEntity<ExceptionJSONInfo> handleNoUserNameException(NoUserNameException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionJSONInfo(e.getMessage()));
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public @ResponseBody
     ResponseEntity<ExceptionJSONInfo> handleEntityNotFoundException(EntityNotFoundException e) {

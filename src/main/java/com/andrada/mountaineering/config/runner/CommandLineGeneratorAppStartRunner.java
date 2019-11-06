@@ -41,7 +41,7 @@ public class CommandLineGeneratorAppStartRunner implements CommandLineRunner {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @Override
+   @Override
     public void run(String... args) throws Exception {
         createAdminIfNotExisting();
     }

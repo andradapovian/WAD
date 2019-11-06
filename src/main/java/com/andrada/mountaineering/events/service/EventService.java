@@ -35,11 +35,11 @@ public class EventService {
     }
 
     public Event getEvent (long id) throws EntityNotFoundException{
-        return eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found at ID: " + id));
+        return eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found at ID: " + id));// this everywhere
     }
 
     public Event updateEvent(long id, Event event) throws EntityNotFoundException{
-        Event dbEvent=eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Event dbEvent=eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found at ID "+ id));
         if(Objects.isNull(dbEvent))
             return null;
         dbEvent.setName(event.getName());
@@ -50,22 +50,10 @@ public class EventService {
     }
 
     public void deleteEvent (long id) throws EntityNotFoundException{
-        Event dbEvent = eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Event dbEvent = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found at ID "+ id));
         if(Objects.isNull(dbEvent))
             return;
         eventRepository.delete(dbEvent);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ModelAndView handleEmployeeNotFoundException(HttpServletRequest request, Exception ex) {
-        logger.error("Requested URL=" + request.getRequestURL());
-        logger.error("Exception Raised=" + ex);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("exception", ex);
-        modelAndView.addObject("url", request.getRequestURL());
-
-        modelAndView.setViewName("error");
-        return modelAndView;
-    }
 }

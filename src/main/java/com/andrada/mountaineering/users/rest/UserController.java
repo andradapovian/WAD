@@ -1,5 +1,8 @@
 package com.andrada.mountaineering.users.rest;
 
+import com.andrada.mountaineering.exceptions.EntityNotFoundException;
+import com.andrada.mountaineering.exceptions.NoUserNameException;
+import com.andrada.mountaineering.users.dto.UserContract;
 import com.andrada.mountaineering.users.model.User;
 import com.andrada.mountaineering.users.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -19,23 +23,25 @@ public class UserController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<User> getAllUsers(){
-        return userService.getAllUsers();
+    public List<UserContract> getAllUsers(){
+        return userService.getAllUsers().stream()
+                .map(UserContract::of)
+                .collect(Collectors.toList());
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public User createNewUser(@RequestBody User user){
-        return userService.createNewUser(user);
+    public UserContract createNewUser(@RequestBody UserContract user) throws NoUserNameException {
+        return UserContract.of(userService.createNewUser(userService.contract2entity(user)));
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUser(@PathVariable long id) throws Exception{
-        return userService.getUser(id);
+    public UserContract getUser(@PathVariable long id) throws Exception{
+        return UserContract.of(userService.getUser(id));
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public User updateUser(@PathVariable long id, @RequestBody User user) throws Exception{
-        return userService.updateUser(id, user);
+    public UserContract updateUser(@PathVariable long id, @RequestBody UserContract user) throws Exception{
+        return UserContract.of(userService.updateUser(id, userService.contract2entity(user)));
     }
 
     @DeleteMapping(path = "/{id}")
