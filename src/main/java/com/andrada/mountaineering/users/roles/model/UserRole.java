@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class UserRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //schimba asa peste tot
+    @GeneratedValue
     private  long id;
 
     @Column
