@@ -25,4 +25,7 @@ public class Event {
 
     @Column
     private Date endDate;
+
+    @Column
+    private String details;
 }

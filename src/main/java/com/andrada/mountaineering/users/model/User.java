@@ -19,15 +19,14 @@ public class User {
     @GeneratedValue
     private long id;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
-    @JoinTable
-    private Set<UserRole> roles = new HashSet<>();
-
     @Column
-    private String email;
+    private String username;
 
     @Column
     private String password;
+
+    @Column
+    private String email;
 
     @Column
     private String firstName;
@@ -35,6 +34,15 @@ public class User {
     @Column
     private String lastName;
 
-    @Column
-    private String username;
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @JoinTable
+    private Set<UserRole> roles = new HashSet<>();
+
+
+
+
+
+
+
+
 }

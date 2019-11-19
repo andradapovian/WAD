@@ -1,9 +1,7 @@
 package com.andrada.mountaineering.users.rest;
 
-import com.andrada.mountaineering.exceptions.EntityNotFoundException;
 import com.andrada.mountaineering.exceptions.NoUserNameException;
 import com.andrada.mountaineering.users.dto.UserContract;
-import com.andrada.mountaineering.users.model.User;
 import com.andrada.mountaineering.users.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -21,6 +20,8 @@ public class UserController {
     public UserController(UserService userService){
         this.userService=userService;
     }
+
+
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserContract> getAllUsers(){

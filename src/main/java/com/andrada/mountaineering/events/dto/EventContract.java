@@ -19,6 +19,7 @@ public class EventContract implements Serializable {
     private String location;
     private Date startDate;
     private Date endDate;
+    private String details;
 
     public static EventContract of(Event event){
         EventContract target = new EventContract();

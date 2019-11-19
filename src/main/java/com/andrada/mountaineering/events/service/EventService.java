@@ -35,7 +35,7 @@ public class EventService {
     }
 
     public Event getEvent (long id) throws EntityNotFoundException{
-        return eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found at ID: " + id));// this everywhere
+        return eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event not found at ID: " + id));
     }
 
     public Event updateEvent(long id, Event event) throws EntityNotFoundException{
@@ -46,6 +46,7 @@ public class EventService {
         dbEvent.setLocation(event.getLocation());
         dbEvent.setStartDate(event.getStartDate());
         dbEvent.setEndDate(event.getEndDate());
+        dbEvent.setDetails(event.getDetails());
         return eventRepository.save(dbEvent);
     }
 
