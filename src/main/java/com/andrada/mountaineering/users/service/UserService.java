@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,17 +23,18 @@ import java.util.Optional;
 @Service
 public class UserService {
     private UserRepository userRepository;
-
-    @Autowired
     private UserRoleRepository userRoleRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
     @Autowired
-    public UserService(UserRepository userRepository, UserRoleRepository userRoleRepository){
+    public UserService(UserRepository userRepository,
+                       UserRoleRepository userRoleRepository,
+                       BCryptPasswordEncoder bCryptPasswordEncoder){
         this.userRepository=userRepository;
         this.userRoleRepository=userRoleRepository;
-
+        this.bCryptPasswordEncoder=bCryptPasswordEncoder;
     }
 
     public List<User> getAllUsers(){
@@ -42,12 +44,18 @@ public class UserService {
     public User createNewUser(User user){
         Optional<UserRole> role = userRoleRepository.findRoleByName("ROLE_VIEWER");
         user.getRoles().add(role.get());
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
     }
 
     public User getUser(long id) throws EntityNotFoundException{
         return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found at ID "+ id));
+    }
+
+    public User findByUsername(String username) throws EntityNotFoundException {
+        return userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User with username " + username + " not found"));
     }
 
     public User updateUser(long id, User user) throws EntityNotFoundException{

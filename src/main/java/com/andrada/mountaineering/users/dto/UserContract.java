@@ -34,3 +34,4 @@ public class UserContract implements Serializable {
     }
 
 }
+

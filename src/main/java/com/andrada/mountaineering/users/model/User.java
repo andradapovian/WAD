@@ -29,6 +29,9 @@ public class User {
     private String email;
 
     @Column
+    private boolean active;
+
+    @Column
     private String firstName;
 
     @Column
@@ -46,3 +49,4 @@ public class User {
 
 
 }
+

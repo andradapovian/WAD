@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 @Component
 public class CommandLineGeneratorAppStartRunner implements CommandLineRunner {
 
@@ -41,9 +40,10 @@ public class CommandLineGeneratorAppStartRunner implements CommandLineRunner {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-   @Override
+    @Override
     public void run(String... args) throws Exception {
         createAdminIfNotExisting();
+        createViewerIfNotExisting();
     }
 
     private void createAdminIfNotExisting() {
@@ -54,6 +54,26 @@ public class CommandLineGeneratorAppStartRunner implements CommandLineRunner {
         }
     }
 
+    private void createViewerIfNotExisting(){
+        if(userRepository.getViewerUserCount() <= 1){
+            UserRole viewerRole = userRoleRepository.findRoleByName(ROLE_VIEWER).orElse(generateUserRole(ROLE_VIEWER));
+            userRepository.save(createViewerUser());
+        }
+    }
+
+    private User createViewerUser(){
+        User viewer = new User();
+        viewer.setId(0);
+        viewer.setUsername("user");
+        viewer.setPassword(bCryptPasswordEncoder.encode("user"));
+        viewer.setLastName("Doe");
+        viewer.setFirstName("Jane");
+        viewer.setEmail("janedoe@mail.com");
+
+        return viewer;
+
+    }
+
     private User createAdminUser(Set<UserRole> roles) {
         User admin = new User();
         admin.setId(0);
@@ -62,6 +82,7 @@ public class CommandLineGeneratorAppStartRunner implements CommandLineRunner {
         admin.setEmail("admin@mountaineering.com");
         admin.setFirstName("Application");
         admin.setLastName("Admin");
+        admin.setActive(true);
         admin.setRoles(roles);
         return admin;
     }
